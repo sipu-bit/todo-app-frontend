@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Sparkles, CheckCircle, Clock, Rocket } from "lucide-react";
+import Heading1 from "../Headings/Heading1";
 
 export default function FeaturedSection() {
   const features = [
@@ -32,7 +33,10 @@ export default function FeaturedSection() {
   ];
 
   return (
-    <section id="FeaturedSetion" className="relative py-24 px-6 md:px-16 text-white bg-transparent">
+    <section style={{
+          background:
+            "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(139, 92, 246, 0.25), transparent 70%), #000000",
+        }} id="features" className="relative py-24 px-6 md:px-16 text-white bg-transparent">
       {/* Animated Gradient Overlay */}
       <motion.div
         className="absolute inset-0 bg-gradient-to-b from-transparent via-violet-900/10 to-transparent opacity-70 pointer-events-none"
@@ -49,9 +53,7 @@ export default function FeaturedSection() {
         transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
         viewport={{ once: true }}
       >
-        <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent">
-          Powerful Features
-        </h2>
+        <Heading1 text="Powerful Features" />
         <p className="mt-4 text-gray-300 max-w-2xl mx-auto">
           Everything you need to plan, organize, and conquer your daily tasks — beautifully designed for productivity.
         </p>

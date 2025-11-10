@@ -19,6 +19,7 @@ type FormState = {
 
 export default function UserRegister() {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState<FormState>({
     username: "",
     email: "",
@@ -48,8 +49,8 @@ export default function UserRegister() {
     setLoading(true);
 
     try {
-     const userData = new FormData()
-     userData.append("username", formData.username);
+      const userData = new FormData()
+      userData.append("username", formData.username);
       userData.append("email", formData.email);
       userData.append("phone", formData.phone);
       userData.append("age", formData.age);
@@ -66,11 +67,10 @@ export default function UserRegister() {
           withCredentials: true,
         }
       );
-
-      toast.success(result.data.message || "User registered successfully",{position:"top-center"});
-
-      const userInfo = { ...formData };
-      localStorage.setItem("verifyUser", JSON.stringify(userInfo));
+      const { message, token, user } = result.data;
+      localStorage.setItem("verifyUser", JSON.stringify(user));
+      setAuthToken(token)
+      toast.success(message || "User registered successfully", { position: "top-center" });
 
       // Reset form
       setFormData({
@@ -83,17 +83,16 @@ export default function UserRegister() {
       });
       setFile(null);
       setPreview(null);
-
-      // Redirect immediately
-      router.push("/dashboard");
+      router.push("/user-login");
     } catch (error: any) {
-      console.error(error);
-      toast.error(error.result?.data?.message || "Something went wrong",{
-        position:"top-center"
+      console.error("Registration error:", error);
+      toast.error(error.response?.data?.message || "Something went wrong", {
+        position: "top-center",
       });
     } finally {
       setLoading(false);
     }
+
   };
 
   // Single input class
@@ -161,7 +160,7 @@ export default function UserRegister() {
             </div>
 
             <div className="hidden md:block pt-6">
-              <img
+              <Image
                 src="/assets/hero-illus.png"
                 alt="illustration"
                 width={260}
@@ -177,7 +176,7 @@ export default function UserRegister() {
               {/* Name & Email */}
               <div className="grid sm:grid-cols-2 gap-4">
                 <input name="username" placeholder="Username" className={inputClass} value={formData.username} onChange={handleFieldChange} />
-                <input name="email" type="email" placeholder="Email" className={inputClass} value={formData.email} onChange={handleFieldChange} />
+                <input name="email" type="text" placeholder="Email" className={inputClass} value={formData.email} onChange={handleFieldChange} />
               </div>
 
               {/* Phone & Age */}
@@ -187,14 +186,58 @@ export default function UserRegister() {
               </div>
 
               {/* Password */}
-              <input
-                name="password"
-                type="password"
-                placeholder="Password"
-                className={inputClass}
-                value={formData.password}
-                onChange={handleFieldChange}
-              />
+              <div className="relative">
+                <input
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Password"
+                  className={inputClass}
+                  value={formData.password}
+                  onChange={handleFieldChange}
+                />
+                <button type="button" onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-3 flex items-center text-white/70 hover:text-white/90 focus:outline-none">
+                  {showPassword ? (
+                    // Eye open icon
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-5 h-5"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  ) : (
+                    // Eye slash icon
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-5 h-5"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M3.98 8.223A10.477 10.477 0 002.458 12c1.274 4.057 5.064 7 9.542 7 1.983 0 3.829-.579 5.378-1.573M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M3 3l18 18"
+                      />
+                    </svg>
+                  )}
+                </button>
+              </div>
               <p className="text-xs text-white/60 -mt-2">
                 Minimum 8 characters, mix of upper, lower, number & symbol.
               </p>

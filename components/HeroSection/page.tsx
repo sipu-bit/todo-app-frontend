@@ -1,6 +1,8 @@
 'use client';
 import React from 'react';
 import PixelBlast from '@/components/PixelBlast'; // adjust the path to where it’s stored
+import { RainbowButton } from '../ui/rainbow-button';
+import Link from 'next/link';
 
 export default function HeroSection() {
   return (
@@ -25,9 +27,7 @@ export default function HeroSection() {
         <p className="text-lg max-w-xl mx-auto">
           Experience the interactive motion magic in the background.
         </p>
-        <button className="mt-6 px-6 py-3 bg-indigo-500 rounded-lg hover:bg-indigo-600 transition">
-          Explore
-        </button>
+       <Link href="/user-register" className=''><RainbowButton className='mt-4' variant="outline">Explore Tasks</RainbowButton></Link>
       </div>
     </section>
   );

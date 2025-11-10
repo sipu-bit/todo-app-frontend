@@ -1,115 +1,155 @@
-"use client";
+'use client';
+
 import React, { useState } from "react";
-import { motion, AnimatePresence,Variants } from "framer-motion";
-import {
-  Home,
-  ListTodo,
-  User,
-  Settings,
-  LogOut,
-  Menu,
-} from "lucide-react";
+import { motion, AnimatePresence, Variant, Variants } from "framer-motion";
+import { Home, ListTodo, User, Settings, LogOut, Menu, X } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface SidebarItem {
   icon: React.ReactNode;
   label: string;
+  reference?: string;
 }
 
 const AnimatedSidebar: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const pathname = usePathname();
 
-  // Framer Motion sidebar animation variants
   const sidebarVariants:Variants = {
-    open: { width: 240, transition: { type: "spring", stiffness: 100 } },
-    closed: { width: 70, transition: { type: "spring", stiffness: 200 } },
+    open: { x: 0, transition: { type: "spring", stiffness: 80 } },
+    closed: { x: "-100%", transition: { type: "spring", stiffness: 200 } },
   };
 
-  // Sidebar menu items
   const items: SidebarItem[] = [
-    { icon: <Home />, label: "Home" },
-    { icon: <ListTodo />, label: "Tasks" },
-    { icon: <User />, label: "Profile" },
-    { icon: <Settings />, label: "Settings" },
-    { icon: <LogOut />, label: "Logout" },
+    { icon: <Home />, label: "Home", reference: "/" },
+    { icon: <ListTodo />, label: "Add Tasks", reference: "/dashboard/add-task" },
+    { icon: <ListTodo />, label: "View Tasks", reference: "/dashboard/view-tasks" },
+    { icon: <User />, label: "Profile", reference: "/profile" },
+    { icon: <Settings />, label: "Settings", reference: "/settings" },
+    { icon: <LogOut />, label: "Logout", reference: "/user-login" },
   ];
 
+  const GlowIndicator = ({ active }: { active: boolean }) => (
+    <motion.div
+      layoutId="activeIndicator"
+      className={`absolute left-0 w-1.5 h-8 rounded-r-full bg-gradient-to-b from-indigo-400 to-cyan-400 ${
+        active ? "opacity-100" : "opacity-0"
+      }`}
+      transition={{ type: "spring", stiffness: 200, damping: 15 }}
+    />
+  );
+
   return (
-    <div className="h-screen w-full relative bg-black text-white overflow-hidden">
-      {/* 🔮 Violet storm glow background */}
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(139, 92, 246, 0.25), transparent 70%), #000000",
-        }}
-      />
-
-      {/* Sidebar */}
-      <motion.div
-        animate={isOpen ? "open" : "closed"}
-        variants={sidebarVariants}
-        className="relative z-10 h-full bg-gradient-to-b from-gray-900/80 to-gray-950/90 backdrop-blur-xl border-r border-gray-800/50 flex flex-col"
+    <div className="relative text-white">
+      {/* 🔹 Mobile Hamburger Button */}
+      <button
+        onClick={() => setIsOpen(true)}
+        className="absolute top-4 left-4 z-30 md:hidden p-2 rounded-lg bg-gray-900/70 hover:bg-gray-800 text-blue-400 transition-all"
       >
-        {/* 🔹 Sidebar Header / Toggle Button */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-800">
-          <motion.h1
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isOpen ? 1 : 0 }}
-            className="text-lg font-semibold text-blue-400"
-          >
-            TaskMaster
-          </motion.h1>
+        <Menu />
+      </button>
 
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="p-2 rounded-lg hover:bg-gray-800 text-blue-400 transition-all"
-          >
-            <Menu />
-          </button>
+      {/* 🔹 Desktop Sidebar */}
+      <div className="hidden md:flex md:flex-col md:w-60 h-screen bg-gradient-to-b from-gray-900/80 to-gray-950/90 border-r border-gray-800/40 backdrop-blur-xl shadow-[inset_0_0_20px_rgba(0,0,0,0.3)]">
+        <div className="p-5 border-b border-gray-800 text-indigo-400 font-semibold text-lg tracking-wide">
+          TaskMaster
         </div>
 
-        {/* 🔹 Menu Items */}
-        <nav className="flex-1 p-4 space-y-2">
-          {items.map((item, index) => (
-            <motion.div
-              key={index}
-              whileHover={{ scale: 1.05, backgroundColor: "rgba(59,130,246,0.1)" }}
-              className="flex items-center gap-4 cursor-pointer p-2 rounded-lg hover:text-blue-400 transition-colors"
-            >
-              <div className="text-xl">{item.icon}</div>
-
-              <AnimatePresence>
-                {isOpen && (
-                  <motion.span
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
-                    transition={{ duration: 0.2 }}
-                    className="text-sm font-medium"
+        <nav className="flex-1 p-4 space-y-2 relative">
+          {items.map((item, index) => {
+            const active = pathname === item.reference;
+            return (
+              <Link key={index} href={item.reference || "#"} className="relative">
+                {active && <GlowIndicator active={true} />}
+                <motion.div
+                  whileHover={{
+                    scale: 1.05,
+                    x: 4,
+                  }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                  className={`flex items-center gap-4 p-3 rounded-lg cursor-pointer transition-all relative ${
+                    active
+                      ? "bg-gradient-to-r from-indigo-600/30 to-cyan-500/20 text-indigo-300"
+                      : "hover:bg-gray-800/60 text-gray-300 hover:text-indigo-300"
+                  }`}
+                >
+                  <motion.div
+                    whileHover={{ rotate: 10, scale: 1.1 }}
+                    className="text-xl"
                   >
-                    {item.label}
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          ))}
+                    {item.icon}
+                  </motion.div>
+                  <span className="text-sm font-medium">{item.label}</span>
+                </motion.div>
+              </Link>
+            );
+          })}
         </nav>
 
-        {/* 🔹 Footer Section */}
-        <div className="p-4 border-t border-gray-800 text-xs text-gray-500">
-          <AnimatePresence>
-            {isOpen && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                © 2025 TaskMaster Inc.
-              </motion.p>
-            )}
-          </AnimatePresence>
+        <div className="p-4 border-t border-gray-800 text-xs text-gray-500 text-center">
+          © 2025 TaskMaster Inc.
         </div>
-      </motion.div>
+      </div>
+
+      {/* 🔹 Mobile / Tablet Sidebar Overlay */}
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            {/* Dim Background */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.4 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsOpen(false)}
+              className="fixed inset-0 bg-black z-20 md:hidden"
+            />
+
+            {/* Sliding Sidebar */}
+            <motion.div
+              initial="closed"
+              animate="open"
+              exit="closed"
+              variants={sidebarVariants}
+              className="fixed top-0 left-0 z-30 w-64 h-screen bg-gradient-to-b from-gray-900/95 to-gray-950/95 backdrop-blur-xl border-r border-gray-800/50 p-5 flex flex-col md:hidden"
+            >
+              <div className="flex justify-between items-center mb-5">
+                <h1 className="text-indigo-400 font-semibold text-lg">TaskMaster</h1>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="p-2 rounded-lg hover:bg-gray-800 text-blue-400"
+                >
+                  <X />
+                </button>
+              </div>
+
+              <nav className="flex-1 space-y-2">
+                {items.map((item, index) => (
+                  <Link
+                    key={index}
+                    href={item.reference || "#"}
+                    onClick={() => setIsOpen(false)}
+                    className={`flex items-center gap-4 p-3 rounded-lg cursor-pointer transition-all ${
+                      pathname === item.reference
+                        ? "bg-gradient-to-r from-indigo-600/30 to-cyan-500/20 text-indigo-300"
+                        : "hover:bg-gray-800/70 text-gray-300 hover:text-indigo-300"
+                    }`}
+                  >
+                    <motion.div whileHover={{ rotate: 10, scale: 1.1 }} className="text-xl">
+                      {item.icon}
+                    </motion.div>
+                    <span className="text-sm font-medium">{item.label}</span>
+                  </Link>
+                ))}
+              </nav>
+
+              <div className="border-t border-gray-800 pt-3 text-xs text-gray-500 text-center">
+                © 2025 TaskMaster Inc.
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -1,9 +1,7 @@
-'use client'
-import React from 'react';
+'use client';
+import React, { useEffect, useState } from 'react';
 import { motion, Variants } from 'framer-motion';
 import { Home, Settings, Bell, User } from 'lucide-react';
-
-// --- MenuBar Component ---
 
 interface MenuItem {
   icon: React.ReactNode;
@@ -19,32 +17,31 @@ const menuItems: MenuItem[] = [
     label: "Home",
     href: "#",
     gradient: "radial-gradient(circle, rgba(59,130,246,0.15) 0%, rgba(37,99,235,0.06) 50%, rgba(29,78,216,0) 100%)",
-    iconColor: "group-hover:text-blue-500 dark:group-hover:text-blue-400",
+    iconColor: "group-hover:text-blue-500",
   },
   {
     icon: <Bell className="h-5 w-5" />,
     label: "About Us",
-    href: "#AboutSection",
+    href: "#about",
     gradient: "radial-gradient(circle, rgba(249,115,22,0.15) 0%, rgba(234,88,12,0.06) 50%, rgba(194,65,12,0) 100%)",
-    iconColor: "group-hover:text-orange-500 dark:group-hover:text-orange-400",
+    iconColor: "group-hover:text-orange-500",
   },
   {
     icon: <Settings className="h-5 w-5" />,
     label: "Our Feature",
-    href: "#FeaturedSetion",
+    href: "#features",
     gradient: "radial-gradient(circle, rgba(34,197,94,0.15) 0%, rgba(22,163,74,0.06) 50%, rgba(21,128,61,0) 100%)",
-    iconColor: "group-hover:text-green-500 dark:group-hover:text-green-400",
+    iconColor: "group-hover:text-green-500",
   },
   {
     icon: <User className="h-5 w-5" />,
-    label: "Profile",
-    href: "#",
+    label: "Faqs",
+    href: "#faqs",
     gradient: "radial-gradient(circle, rgba(239,68,68,0.15) 0%, rgba(220,38,38,0.06) 50%, rgba(185,28,28,0) 100%)",
-    iconColor: "group-hover:text-red-500 dark:group-hover:text-red-400",
+    iconColor: "group-hover:text-red-500",
   },
 ];
 
-// Animation variants for different parts of the menu
 const itemVariants: Variants = {
   initial: { rotateX: 0, opacity: 1 },
   hover: { rotateX: -90, opacity: 0 },
@@ -61,7 +58,7 @@ const glowVariants: Variants = {
     opacity: 1,
     scale: 2,
     transition: {
-      opacity: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
+      opacity: { duration: 0.5 },
       scale: { duration: 0.5, type: "spring", stiffness: 300, damping: 25 },
     },
   },
@@ -69,13 +66,7 @@ const glowVariants: Variants = {
 
 const navGlowVariants: Variants = {
   initial: { opacity: 0 },
-  hover: {
-    opacity: 1,
-    transition: {
-      duration: 0.5,
-      ease: [0.4, 0, 0.2, 1],
-    },
-  },
+  hover: { opacity: 1, transition: { duration: 0.5 } },
 };
 
 const sharedTransition = {
@@ -86,79 +77,93 @@ const sharedTransition = {
 };
 
 export default function Navbar(): React.JSX.Element {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) setScrolled(true);
+      else setScrolled(false);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-   <motion.div className='w-full mt-4 fixed top-0 z-50 flex justify-center items-center'>
-    <motion.nav
-      className="p-2 rounded-2xl  top-0 z-50 max-w-7xl bg-white/10 dark:bg-black/10 backdrop-blur-xl dark:border-gray-800/40 shadow-lg dark:shadow-gray-900/400 relative overflow-hidden"
-      initial="initial"
-      whileHover="hover"
-    >
-      
-      <motion.div
-        className="absolute -inset-2 rounded-3xl z-0 pointer-events-none"
-        style={{
-          background: "radial-gradient(circle, rgba(55, 1, 88, 0.1) 0%, rgba(46, 2, 54, 0.1) 50%, rgba(239,68,68,0.1) 100%)"
+    <motion.div className="w-full fixed top-4 z-50 flex justify-center items-center">
+      <motion.nav
+        initial="initial"
+        whileHover="hover"
+        animate={{
+          backgroundColor: scrolled ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.05)",
+          boxShadow: scrolled
+            ? "0px 2px 20px rgba(0,0,0,0.1)"
+            : "0px 0px 0px rgba(0,0,0,0)",
         }}
-        variants={navGlowVariants}
-      />
-      <ul className="flex items-center gap-2 relative z-10">
-        {menuItems.map((item: MenuItem) => (
-          <motion.li key={item.label} className="relative">
-            <motion.div
-              className="block rounded-xl overflow-visible group relative"
-              style={{ perspective: "600px" }}
-              whileHover="hover"
-              initial="initial"
-            >
-              {/* Glow effect on hover */}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="p-2 rounded-2xl backdrop-blur-xl shadow-lg border border-white/10 dark:border-gray-800/40 max-w-7xl relative overflow-hidden"
+      >
+        <motion.div
+          className="absolute -inset-2 rounded-3xl z-0 pointer-events-none"
+          style={{
+            background: "radial-gradient(circle, rgba(55,1,88,0.1) 0%, rgba(46,2,54,0.1) 50%, rgba(239,68,68,0.1) 100%)",
+          }}
+          variants={navGlowVariants}
+        />
+
+        <ul className="flex items-center gap-2 relative z-10">
+          {menuItems.map((item) => (
+            <motion.li key={item.label} className="relative">
               <motion.div
-                className="absolute inset-0 z-0 pointer-events-none rounded-2xl"
-                variants={glowVariants}
-                style={{
-                  background: item.gradient,
-                  opacity: 0,
-                }}
-              />
-              {/* Front-facing menu item */}
-              <motion.a
-                href={item.href}
-                className="flex items-center gap-2 px-4 py-2 relative z-10 bg-transparent text-gray-200 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition-colors rounded-xl"
-                variants={itemVariants}
-                transition={sharedTransition}
-                style={{
-                  transformStyle: "preserve-3d",
-                  transformOrigin: "center bottom"
-                }}
+                className="block rounded-xl overflow-visible group relative"
+                style={{ perspective: "600px" }}
+                whileHover="hover"
+                initial="initial"
               >
-                <span className={`transition-colors duration-300 ${item.iconColor}`}>
-                  {item.icon}
-                </span>
-                <span className="font-medium">{item.label}</span>
-              </motion.a>
-              
-              {/* Back-facing menu item for the 3D flip effect */}
-              <motion.a
-                href={item.href}
-                className="flex items-center gap-2 px-4 py-2 absolute inset-0 z-10 bg-transparent text-gray-300 dark:text-gray-300 group-hover:text-gray-400 dark:group-hover:text-white transition-colors rounded-xl"
-                variants={backVariants}
-                transition={sharedTransition}
-                style={{
-                  transformStyle: "preserve-3d",
-                  transformOrigin: "center top",
-                  transform: "rotateX(90deg)"
-                }}
-              >
-                <span className={`transition-colors duration-300 ${item.iconColor}`}>
-                  {item.icon}
-                </span>
-                <span className="font-medium">{item.label}</span>
-              </motion.a>
-            </motion.div>
-          </motion.li>
-        ))}
-      </ul>
-    </motion.nav>
+                {/* Glow */}
+                <motion.div
+                  className="absolute inset-0 z-0 pointer-events-none rounded-2xl"
+                  variants={glowVariants}
+                  style={{ background: item.gradient, opacity: 0 }}
+                />
+
+                {/* Front-facing link */}
+                <motion.a
+                  href={item.href}
+                  className={`flex items-center gap-2 px-4 py-2 relative z-10 rounded-xl transition-colors duration-300 ${
+                    scrolled
+                      ? "text-gray-800 hover:text-blue-600"
+                      : "text-gray-200 hover:text-white"
+                  }`}
+                  variants={itemVariants}
+                  transition={sharedTransition}
+                  style={{
+                    transformStyle: "preserve-3d",
+                    transformOrigin: "center bottom",
+                  }}
+                >
+                  <span className={item.iconColor}>{item.icon}</span>
+                  <span className="font-medium">{item.label}</span>
+                </motion.a>
+
+                <motion.a
+                  href={item.href}
+                  className="flex items-center gap-2 px-4 py-2 absolute inset-0 z-10 bg-transparent text-gray-400 rounded-xl"
+                  variants={backVariants}
+                  transition={sharedTransition}
+                  style={{
+                    transformStyle: "preserve-3d",
+                    transformOrigin: "center top",
+                    transform: "rotateX(90deg)",
+                  }}
+                >
+                  <span className={item.iconColor}>{item.icon}</span>
+                  <span className="font-medium">{item.label}</span>
+                </motion.a>
+              </motion.div>
+            </motion.li>
+          ))}
+        </ul>
+      </motion.nav>
     </motion.div>
   );
 }
-
