@@ -47,7 +47,7 @@ export default function ModifyTask({ task, onTaskUpdated }: EditTaskProps) {
 
         try {
             const response = await axios.put(
-                `http://localhost:5000/api/task/editTask/${task._id}`, formData,
+                `https://todo-backend-5uyj.onrender.com/api/task/editTask/${task._id}`, formData,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,

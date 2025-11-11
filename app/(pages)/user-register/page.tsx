@@ -60,7 +60,7 @@ export default function UserRegister() {
       if (file) userData.append("profile", file);
 
       const result = await axios.post(
-        "http://localhost:5000/api/user/addUser",
+        "https://todo-backend-5uyj.onrender.com/api/user/addUser",
         userData,
         {
           headers: { "Content-Type": "multipart/form-data" },

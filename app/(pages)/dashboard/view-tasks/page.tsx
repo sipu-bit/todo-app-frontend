@@ -26,7 +26,7 @@ export default function ViewTasks() {
     const token = localStorage.getItem("authToken");
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:5000/api/task/viewTasks", {
+      const response = await axios.get("https://todo-backend-5uyj.onrender.com/api/task/viewTasks", {
         withCredentials: true,
         headers: {
           Authorization: `Bearer ${token}`,
