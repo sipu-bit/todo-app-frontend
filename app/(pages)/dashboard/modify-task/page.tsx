@@ -13,16 +13,16 @@ import { toast } from "sonner";
 import Heading1 from "@/components/Headings/Heading1";
 
 export interface Task {
-  _id: string;
-  title: string;
-  description?: string;
-  status: "pending" | "in-progress" | "completed";
-  dueDate?: string;
-  priority?: "low" | "medium" | "high";
+    _id: string;
+    title: string;
+    description?: string;
+    status: "pending" | "in-progress" | "completed";
+    dueDate?: string;
+    priority?: "low" | "medium" | "high";
 }
-interface ModifyTaskProps{
-    task:Task,
-    onTaskUpdated:()=>void
+interface ModifyTaskProps {
+    task: Task,
+    onTaskUpdated: () => void
 }
 export default function ModifyTask({ task, onTaskUpdated }: ModifyTaskProps) {
     const [formData, setFormData] = useState({
@@ -32,9 +32,7 @@ export default function ModifyTask({ task, onTaskUpdated }: ModifyTaskProps) {
         dueDate: task.dueDate || "",
         priority: task.priority || "low",
     });
-
     const [loading, setLoading] = useState(false);
-    //   const [message, setMessage] = useState("");
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -44,7 +42,7 @@ export default function ModifyTask({ task, onTaskUpdated }: ModifyTaskProps) {
         e.preventDefault();
         setLoading(true);
         const token = localStorage.getItem("authToken");
-
+        console.log("fetched token", token)
         try {
             const response = await axios.put(
                 `https://todo-backend-5uyj.onrender.com/api/task/editTask/${task._id}`, formData,

@@ -6,6 +6,7 @@ import Image from "next/image";
 import AnimatedSidebar from "@/components/Sidebar/page";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
+import Link from "next/link";
 
 interface TokenDecoded {
   _id: string;
@@ -56,7 +57,7 @@ export default function Dashboard() {
       console.log(token);
       try {
         setLoading(true);
-        const response = await axios.get("http://localhost:5000/api/task/viewTasks",{
+        const response = await axios.get("https://todo-backend-5uyj.onrender.com/api/task/viewTasks",{
           withCredentials: true,
           headers: {
             Authorization: `Bearer ${token}`,
@@ -75,7 +76,7 @@ export default function Dashboard() {
   },[])
   const cards = [
     { title: "Total Users", value: "1,204", desc: "Active this week" },
-    { title: "Tasks Completed", value: loading?"...":totalTasks, desc: "Last 7 days" },
+    { title: "Tasks Completed", value: loading?"...":totalTasks, links:"/dashboard/view-tasks", desc: "Last 7 days" },
     { title: "Revenue", value: "$12,430", desc: "This month" },
     { title: "New Messages", value: "34", desc: "Unread notifications" },
   ];
@@ -144,6 +145,7 @@ export default function Dashboard() {
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-8"
         >
           {cards.map((card, index) => (
+            <Link href={card.links ?? "#"}>
             <motion.div
               key={index}
               whileHover={{ scale: 1.05, y: -5 }}
@@ -156,6 +158,8 @@ export default function Dashboard() {
               <p className="text-3xl font-bold mb-1">{card.value}</p>
               <p className="text-sm text-gray-400">{card.desc}</p>
             </motion.div>
+                    </Link>
+
           ))}
         </motion.div>
       </div>
