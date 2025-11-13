@@ -25,7 +25,7 @@ const AnimatedSidebar: React.FC = () => {
     { icon: <Home />, label: "Home", reference: "/dashboard" },
     { icon: <ListTodo />, label: "Add Tasks", reference: "/dashboard/add-task" },
     { icon: <ListTodo />, label: "View Tasks", reference: "/dashboard/view-tasks" },
-    { icon: <User />, label: "Profile", reference: "/profile" },
+    { icon: <User />, label: "Profile", reference: "/dashboard/user-profile" },
     { icon: <LogOut />, label: "Logout", reference: "/user-login" },
   ];
 
